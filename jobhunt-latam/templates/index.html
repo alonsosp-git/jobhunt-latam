@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JobHunt LatAm · Remote jobs + resume matching</title>
+<link rel="icon" href="data:,">
+<style>
+  :root{
+    --bg:#0b1020; --bg2:#0f1830; --card:#141d36; --card2:#1a2542;
+    --line:#243154; --txt:#e8eefc; --mut:#90a0c8; --mut2:#6d7ca6;
+    --acc:#5b8cff; --acc2:#7c5cff; --grn:#33d69f; --amber:#ffb547;
+    --red:#ff6b6b; --chip:#1d2949; --shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    background:radial-gradient(1200px 600px at 80% -10%,#1a2447 0%,transparent 60%),
+               radial-gradient(900px 500px at -10% 10%,#1c1740 0%,transparent 55%),var(--bg);
+    color:var(--txt);min-height:100vh;-webkit-font-smoothing:antialiased}
+  a{color:var(--acc)}
+  .wrap{max-width:1180px;margin:0 auto;padding:24px 20px 80px}
+  header.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--acc),var(--acc2));
+    display:grid;place-items:center;font-weight:800;font-size:20px;box-shadow:var(--shadow)}
+  .brand h1{font-size:20px;margin:0;letter-spacing:.2px}
+  .brand p{margin:2px 0 0;font-size:12.5px;color:var(--mut)}
+  .pillbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .pill{font-size:12px;padding:6px 11px;border-radius:999px;background:var(--chip);color:var(--mut);
+    border:1px solid var(--line);display:flex;align-items:center;gap:6px}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--mut2)}
+  .dot.on{background:var(--grn);box-shadow:0 0 8px var(--grn)}
+  .btn{cursor:pointer;border:none;border-radius:10px;padding:11px 16px;font-size:14px;font-weight:600;
+    color:#fff;background:linear-gradient(135deg,var(--acc),var(--acc2));transition:.15s;white-space:nowrap}
+  .btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+  .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+  .btn.ghost{background:var(--card2);color:var(--txt);border:1px solid var(--line)}
+  .btn.sm{padding:7px 12px;font-size:13px}
+  .grid{display:grid;grid-template-columns:330px 1fr;gap:20px;align-items:start}
+  @media(max-width:880px){.grid{grid-template-columns:1fr}}
+  .card{background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--line);
+    border-radius:16px;padding:18px;box-shadow:var(--shadow)}
+  .card h3{margin:0 0 14px;font-size:14px;text-transform:uppercase;letter-spacing:.8px;color:var(--mut)}
+  label{display:block;font-size:12.5px;color:var(--mut);margin:12px 0 6px;font-weight:600}
+  input[type=text],input[type=number],input[type=password],select{
+    width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--line);
+    background:var(--bg);color:var(--txt);font-size:14px;outline:none}
+  input:focus,select:focus{border-color:var(--acc)}
+  .row{display:flex;gap:10px}
+  .row>*{flex:1}
+  .chk{display:flex;align-items:center;gap:8px;margin:8px 0;font-size:13.5px;color:var(--txt);cursor:pointer}
+  .chk input{width:16px;height:16px;accent-color:var(--acc)}
+  .srcgrid{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px}
+  .srcrow{display:flex;align-items:center;gap:7px;margin:5px 0}
+  .srcrow input{width:16px;height:16px;accent-color:var(--acc);flex:none;cursor:pointer}
+  .srclink{color:var(--txt);font-size:13.5px;text-decoration:none;white-space:nowrap}
+  .srclink:hover{color:var(--acc);text-decoration:underline}
+  .srclink .ext{color:var(--mut2);font-size:11px}
+  .nocb{width:16px;flex:none;text-align:center;color:var(--mut2);font-size:14px}
+  .uploadbox{border:1.5px dashed var(--line);border-radius:12px;padding:18px;text-align:center;
+    cursor:pointer;transition:.15s;background:var(--bg)}
+  .uploadbox:hover{border-color:var(--acc);background:var(--card2)}
+  .uploadbox.has{border-style:solid;border-color:var(--grn)}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .chip-s{font-size:11.5px;padding:4px 9px;border-radius:7px;background:var(--chip);color:var(--mut);border:1px solid var(--line)}
+  .chip-s.g{background:rgba(51,214,159,.12);color:var(--grn);border-color:rgba(51,214,159,.3)}
+  .chip-s.r{background:rgba(255,107,107,.1);color:var(--red);border-color:rgba(255,107,107,.3)}
+  .toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px}
+  .toolbar .meta{font-size:13px;color:var(--mut)}
+  .sortsel{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mut)}
+  .sortsel select{width:auto;padding:7px 10px}
+  .job{background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--line);
+    border-radius:14px;padding:16px 16px 14px;margin-bottom:13px;transition:.15s}
+  .job:hover{border-color:var(--acc);box-shadow:var(--shadow)}
+  .job .jh{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}
+  .job h4{margin:0 0 3px;font-size:16px;line-height:1.3}
+  .job .co{font-size:13px;color:var(--mut)}
+  .score{text-align:center;min-width:62px}
+  .score .num{font-size:22px;font-weight:800;line-height:1}
+  .score .lbl{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px}
+  .badges{display:flex;flex-wrap:wrap;gap:7px;margin:11px 0 4px}
+  .badge{font-size:11.5px;padding:4px 9px;border-radius:7px;border:1px solid var(--line);background:var(--chip);color:var(--mut);display:flex;gap:5px;align-items:center}
+  .badge.latam{background:rgba(51,214,159,.12);color:var(--grn);border-color:rgba(51,214,159,.3)}
+  .badge.latam.mid{background:rgba(255,181,71,.12);color:var(--amber);border-color:rgba(255,181,71,.3)}
+  .badge.latam.low{background:rgba(255,107,107,.1);color:var(--red);border-color:rgba(255,107,107,.3)}
+  .badge.sal{background:rgba(91,140,255,.12);color:var(--acc);border-color:rgba(91,140,255,.3)}
+  .badge.src{background:var(--card2)}
+  .job .desc{font-size:13px;color:var(--mut);margin:9px 0 0;max-height:0;overflow:hidden;transition:.2s}
+  .job.open .desc{max-height:400px;overflow:auto;margin-top:11px}
+  .job .acts{display:flex;gap:9px;margin-top:13px;flex-wrap:wrap}
+  .grade{color:var(--grn)} .grade.b{color:var(--acc)} .grade.c{color:var(--amber)} .grade.d{color:var(--mut2)}
+  .empty{text-align:center;padding:60px 20px;color:var(--mut)}
+  .empty .big{font-size:46px;margin-bottom:12px}
+  .spin{width:18px;height:18px;border:2.5px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;
+    animation:sp .7s linear infinite;display:inline-block;vertical-align:middle}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .modal{position:fixed;inset:0;background:rgba(5,8,18,.72);backdrop-filter:blur(4px);display:none;
+    align-items:flex-start;justify-content:center;padding:40px 16px;z-index:50;overflow:auto}
+  .modal.show{display:flex}
+  .sheet{background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--line);
+    border-radius:18px;max-width:720px;width:100%;padding:24px;box-shadow:var(--shadow)}
+  .sheet h2{margin:0 0 4px;font-size:20px}
+  .sheet .co{color:var(--mut);font-size:13.5px;margin-bottom:16px}
+  .sec{margin:18px 0}
+  .sec h5{margin:0 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:.7px;color:var(--mut)}
+  textarea{width:100%;min-height:84px;padding:11px;border-radius:10px;border:1px solid var(--line);
+    background:var(--bg);color:var(--txt);font-size:13.5px;font-family:inherit;resize:vertical}
+  .sg{display:flex;gap:9px;align-items:flex-start;padding:9px 11px;background:var(--bg);border:1px solid var(--line);
+    border-radius:10px;margin-bottom:8px;font-size:13.5px}
+  .sg input{width:16px;height:16px;margin-top:2px;accent-color:var(--grn)}
+  .edit{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 11px;margin-bottom:8px}
+  .edit label{display:flex;gap:8px;align-items:flex-start;margin:0;cursor:pointer}
+  .edit input{width:16px;height:16px;margin-top:2px;accent-color:var(--grn)}
+  .edit .bef{color:var(--red);text-decoration:line-through;font-size:12.5px;line-height:1.4}
+  .edit .aft{color:var(--grn);font-size:13px;margin-top:3px;line-height:1.4}
+  .edit .rsn{color:var(--mut2);font-size:11px;margin-top:5px;font-style:italic}
+  .noChange{background:rgba(51,214,159,.1);border:1px solid rgba(51,214,159,.35);border-radius:12px;padding:20px;text-align:center;margin:14px 0}
+  .noChange .big{font-size:38px}
+  .fmtnote{font-size:12px;padding:9px 12px;border-radius:9px;margin-top:6px;line-height:1.4}
+  .fmtnote.ok{background:rgba(51,214,159,.1);color:var(--grn);border:1px solid rgba(51,214,159,.3)}
+  .fmtnote.warn{background:rgba(255,181,71,.12);color:var(--amber);border:1px solid rgba(255,181,71,.3)}
+  .close{float:right;cursor:pointer;color:var(--mut);font-size:22px;line-height:1;border:none;background:none}
+  .modal-acts{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;flex-wrap:wrap}
+  .enginetag{font-size:11px;padding:3px 9px;border-radius:6px;background:var(--chip);color:var(--mut);border:1px solid var(--line)}
+  .enginetag.ai{background:rgba(124,92,255,.15);color:#b9a8ff;border-color:rgba(124,92,255,.4)}
+  .boards-wrap{display:none;margin-top:10px}
+  .boards-wrap.show{display:block}
+  .bgroup{margin-bottom:8px}
+  .bgroup h6{margin:10px 0 4px;font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--mut2)}
+  .boards{display:flex;flex-wrap:wrap;gap:6px}
+  .boards a{font-size:11.5px;padding:5px 9px;border-radius:7px;background:var(--bg);color:var(--acc);border:1px solid var(--line);text-decoration:none}
+  .boards a:hover{border-color:var(--acc);filter:brightness(1.1)}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--card2);
+    border:1px solid var(--line);padding:12px 18px;border-radius:12px;font-size:14px;box-shadow:var(--shadow);
+    z-index:99;opacity:0;transition:.25s;pointer-events:none;max-width:90%}
+  .toast.show{opacity:1;bottom:34px}
+  .hint{font-size:11.5px;color:var(--mut2);margin-top:6px;line-height:1.4}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="logo">JH</div>
+      <div>
+        <h1>JobHunt LatAm</h1>
+        <p>Remote roles open to LatAm · resume matching · tailored suggestions</p>
+      </div>
+    </div>
+    <div class="pillbar">
+      <span class="pill"><span class="dot" id="resumeDot"></span><span id="resumePill">No resume</span></span>
+      <span class="pill"><span class="dot" id="aiDot"></span><span id="aiPill">Local engine</span></span>
+      <button class="btn ghost sm" onclick="openSettings()">⚙ Settings</button>
+    </div>
+  </header>
+
+  <div class="grid">
+    <div>
+      <div class="card">
+        <h3>Search</h3>
+        <label>Keywords (role, skill, stack)</label>
+        <input type="text" id="keywords" placeholder="e.g. python backend, react, data analyst" />
+        <div class="row">
+          <div>
+            <label>Min salary (USD/yr)</label>
+            <input type="number" id="minSalary" placeholder="optional" min="0" step="5000"/>
+          </div>
+          <div>
+            <label>Sort by</label>
+            <select id="sortBy">
+              <option value="match">Best match</option>
+              <option value="latam">Eligibility</option>
+              <option value="salary">Salary</option>
+            </select>
+          </div>
+        </div>
+        <label>Based in (country)</label>
+        <select id="country"><option value="all">All LatAm</option></select>
+        <div class="hint">Eligibility is judged for this country. Worldwide/anywhere roles and Spain (possible sponsorship) always count; "remote from USA/EU/etc." are flagged not eligible.</div>
+
+        <label style="margin-top:14px">Sources</label>
+        <div class="srcgrid">
+          <div class="srcrow"><input type="checkbox" class="src" value="remotive" checked><a class="srclink" data-src="remotive" href="#" target="_blank" rel="noopener" title="Open Remotive with your keyword">Remotive <span class="ext">↗</span></a></div>
+          <div class="srcrow"><input type="checkbox" class="src" value="remoteok" checked><a class="srclink" data-src="remoteok" href="#" target="_blank" rel="noopener" title="Open RemoteOK with your keyword">RemoteOK <span class="ext">↗</span></a></div>
+          <div class="srcrow"><input type="checkbox" class="src" value="arbeitnow" checked><a class="srclink" data-src="arbeitnow" href="#" target="_blank" rel="noopener" title="Open Arbeitnow with your keyword">Arbeitnow <span class="ext">↗</span></a></div>
+          <div class="srcrow"><input type="checkbox" class="src" value="jobicy" checked><a class="srclink" data-src="jobicy" href="#" target="_blank" rel="noopener" title="Open Jobicy with your keyword">Jobicy <span class="ext">↗</span></a></div>
+          <div class="srcrow"><input type="checkbox" class="src" value="himalayas" checked><a class="srclink" data-src="himalayas" href="#" target="_blank" rel="noopener" title="Open Himalayas with your keyword">Himalayas <span class="ext">↗</span></a></div>
+          <div class="srcrow"><input type="checkbox" class="src" value="workingnomads" checked><a class="srclink" data-src="workingnomads" href="#" target="_blank" rel="noopener" title="Open WorkingNomads with your keyword">WorkingNomads <span class="ext">↗</span></a></div>
+          <div class="srcrow"><input type="checkbox" class="src" value="getonbrd" checked><a class="srclink" data-src="getonbrd" href="#" target="_blank" rel="noopener" title="Open GetOnBoard with your keyword">GetOnBoard <span class="ext">↗</span></a></div>
+          <div class="srcrow"><input type="checkbox" class="src" value="themuse"><a class="srclink" data-src="themuse" href="#" target="_blank" rel="noopener" title="Open The Muse with your keyword">The Muse <span class="ext">↗</span></a></div>
+          <div class="srcrow"><input type="checkbox" class="src" value="weworkremotely"><a class="srclink" data-src="weworkremotely" href="#" target="_blank" rel="noopener" title="Open WeWorkRemotely with your keyword">WeWorkRemotely <span class="ext">↗</span></a></div>
+          <div class="srcrow"><input type="checkbox" class="src" value="jobspresso"><a class="srclink" data-src="jobspresso" href="#" target="_blank" rel="noopener" title="Open Jobspresso with your keyword">Jobspresso <span class="ext">↗</span></a></div>
+          <div class="srcrow"><span class="nocb" title="hiring.cafe closed its API — opens the site instead">•</span><a class="srclink" data-src="hiringcafe" href="#" target="_blank" rel="noopener" title="hiring.cafe changed its API — opens its site pre-searched with your keyword">hiring.cafe <span class="ext">↗ opens site</span></a></div>
+        </div>
+        <div class="hint">Tip: click a source name (↗) to open its site pre-searched with your keyword. The checkboxes pick which sources are searched inside this app. <b>hiring.cafe</b> closed its public API, so it opens as a link (its search still works in your browser).</div>
+        <label class="chk" style="margin-top:8px"><input type="checkbox" id="latamOnly" checked> Eligible only (hide jobs I can't take)</label>
+        <div class="hint">Salary filter only hides jobs that <b>disclose</b> a lower salary; jobs with no salary info still appear.</div>
+        <button class="btn" id="searchBtn" style="width:100%;margin-top:16px" onclick="runSearch()">🔍 Search jobs</button>
+      </div>
+
+      <div class="card" style="margin-top:18px">
+        <h3>Resume</h3>
+        <div class="uploadbox" id="uploadBox" onclick="document.getElementById('fileInput').click()">
+          <div id="uploadText">
+            <div style="font-size:30px">📄</div>
+            <div style="margin-top:6px;font-size:13.5px">Drop or click to upload</div>
+            <div class="hint">.pdf · .docx · .txt</div>
+          </div>
+        </div>
+        <input type="file" id="fileInput" accept=".pdf,.docx,.txt" style="display:none" onchange="uploadResume(this.files[0])"/>
+        <div id="skillChips" class="chips"></div>
+        <div class="hint" id="skillNote" style="display:none">Skills detected from your <b>work experience</b> (courses &amp; education are ignored for matching). Upload a <b>.docx</b> to keep your exact formatting when tailoring.</div>
+      </div>
+
+      <div class="card" style="margin-top:18px">
+        <h3 style="margin-bottom:6px">More job boards</h3>
+        <div class="hint">These can\'t be auto-searched here (they need login/keys or block bots), but open them in your browser. Spain/Europe roles usually need EU work authorization — Spain sometimes sponsors.</div>
+        <button class="btn ghost sm" style="margin-top:10px" onclick="document.getElementById('boardsWrap').classList.toggle('show')">Show / hide boards ▾</button>
+        <div class="boards-wrap" id="boardsWrap">
+          <div class="bgroup"><h6>🌎 Remote / global</h6><div class="boards"><a href="https://wellfound.com/jobs" target="_blank" rel="noopener">Wellfound</a><a href="https://remoteok.com" target="_blank" rel="noopener">RemoteOK</a><a href="https://weworkremotely.com" target="_blank" rel="noopener">We Work Remotely</a><a href="https://himalayas.app" target="_blank" rel="noopener">Himalayas</a><a href="https://remotive.com" target="_blank" rel="noopener">Remotive</a><a href="https://justremote.co" target="_blank" rel="noopener">JustRemote</a><a href="https://www.workingnomads.com/jobs" target="_blank" rel="noopener">Working Nomads</a><a href="https://jobspresso.co" target="_blank" rel="noopener">Jobspresso</a><a href="https://remote.co/remote-jobs" target="_blank" rel="noopener">Remote.co</a><a href="https://remote.com/jobs" target="_blank" rel="noopener">Remote.com</a><a href="https://www.flexjobs.com" target="_blank" rel="noopener">FlexJobs</a><a href="https://www.virtualvocations.com" target="_blank" rel="noopener">Virtual Vocations</a><a href="https://builtin.com/jobs" target="_blank" rel="noopener">Built In</a><a href="https://builtin.com/jobs?country=CRI&allLocations=true" target="_blank" rel="noopener">Built In · Costa Rica</a><a href="https://www.indeed.com" target="_blank" rel="noopener">Indeed</a><a href="https://www.glassdoor.com" target="_blank" rel="noopener">Glassdoor</a><a href="https://otta.com" target="_blank" rel="noopener">Otta</a><a href="https://jsremotely.com" target="_blank" rel="noopener">JS Remotely</a><a href="https://www.toptal.com" target="_blank" rel="noopener">Toptal</a><a href="https://www.turing.com" target="_blank" rel="noopener">Turing</a><a href="https://hiring.cafe/" target="_blank" rel="noopener">hiring.cafe</a><a href="https://remoterebellion.com/weekly-remote-jobs" target="_blank" rel="noopener">Remote Rebellion</a></div></div>
+          <div class="bgroup"><h6>🌴 LatAm</h6><div class="boards"><a href="https://www.getonbrd.com" target="_blank" rel="noopener">Get on Board</a><a href="https://remoteyeah.com/remote-jobs-in-latin-america" target="_blank" rel="noopener">RemoteYeah · LatAm</a><a href="https://torre.ai" target="_blank" rel="noopener">Torre</a><a href="https://www.workana.com" target="_blank" rel="noopener">Workana</a><a href="https://cr.computrabajo.com" target="_blank" rel="noopener">Computrabajo CR</a><a href="https://www.bumeran.com.ar" target="_blank" rel="noopener">Bumeran</a><a href="https://www.zonajobs.com.ar" target="_blank" rel="noopener">ZonaJobs</a><a href="https://www.occ.com.mx" target="_blank" rel="noopener">OCC Mundial (MX)</a><a href="https://www.laborum.cl" target="_blank" rel="noopener">Laborum (CL)</a><a href="https://empleosti.com.mx" target="_blank" rel="noopener">Empleos TI (MX)</a><a href="https://hireline.io" target="_blank" rel="noopener">Hireline</a><a href="https://www.gofasti.com" target="_blank" rel="noopener">gofasti</a><a href="https://hirelatam.com" target="_blank" rel="noopener">HireLATAM</a><a href="https://latamrecruit.com" target="_blank" rel="noopener">LatamRecruit</a><a href="https://nexton.dev" target="_blank" rel="noopener">Nexton</a></div></div>
+          <div class="bgroup"><h6>🇨🇷 Costa Rica</h6><div class="boards"><a href="https://www.tecoloco.co.cr" target="_blank" rel="noopener">Tecoloco CR</a><a href="https://cr.acciontrabajo.com" target="_blank" rel="noopener">AcciónTrabajo CR</a><a href="https://www.joblink.cr" target="_blank" rel="noopener">JobLink CR</a><a href="https://empleosencostarica.com" target="_blank" rel="noopener">Empleos en CR</a><a href="https://rrhh.ccss.sa.cr" target="_blank" rel="noopener">CCSS (gob)</a><a href="http://www.dgsc.go.cr" target="_blank" rel="noopener">Servicio Civil (DGSC)</a></div></div>
+          <div class="bgroup"><h6>🇪🇸 Spain / Europe (work auth needed)</h6><div class="boards"><a href="https://www.infojobs.net" target="_blank" rel="noopener">InfoJobs</a><a href="https://www.tecnoempleo.com" target="_blank" rel="noopener">Tecnoempleo</a><a href="https://www.domestika.org/en/jobs" target="_blank" rel="noopener">Domestika Jobs</a><a href="https://www.malt.es" target="_blank" rel="noopener">Malt</a><a href="https://landing.jobs" target="_blank" rel="noopener">Landing.jobs</a><a href="https://www.honeypot.io" target="_blank" rel="noopener">Honeypot</a><a href="https://relocate.me" target="_blank" rel="noopener">Relocate.me</a><a href="https://eures.europa.eu" target="_blank" rel="noopener">EURES</a><a href="https://www.eutechjobs.com" target="_blank" rel="noopener">EU Tech Jobs</a></div></div>
+          <div class="bgroup"><h6>💼 Freelance</h6><div class="boards"><a href="https://www.upwork.com" target="_blank" rel="noopener">Upwork</a><a href="https://www.freelancer.com" target="_blank" rel="noopener">Freelancer</a><a href="https://www.workana.com" target="_blank" rel="noopener">Workana</a></div></div>
+          <div class="bgroup"><h6>🤖 AI job-search tools</h6><div class="boards"><a href="https://lazyapply.com" target="_blank" rel="noopener">LazyApply</a><a href="https://www.loopcv.pro" target="_blank" rel="noopener">LoopCV</a><a href="https://careerflow.ai" target="_blank" rel="noopener">Careerflow AI</a></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="toolbar">
+        <div class="meta" id="resultMeta">Run a search to see remote roles open to LatAm.</div>
+        <div class="sortsel" id="reSortWrap" style="display:none">
+          <button class="btn ghost sm" onclick="runSearch()">↻ Refresh</button>
+        </div>
+      </div>
+      <div id="results">
+        <div class="empty">
+          <div class="big">🌎</div>
+          <div>Enter keywords and hit <b>Search jobs</b>.</div>
+          <div class="hint" style="margin-top:8px">Upload your resume first to get match scores and tailored suggestions.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="suggestModal">
+  <div class="sheet">
+    <button class="close" onclick="closeModal('suggestModal')">×</button>
+    <div id="suggestBody"><div class="empty"><span class="spin"></span></div></div>
+  </div>
+</div>
+
+<div class="modal" id="settingsModal">
+  <div class="sheet" style="max-width:520px">
+    <button class="close" onclick="closeModal('settingsModal')">×</button>
+    <h2>Settings</h2>
+    <div class="co">This engine <b>only affects the ✨ Tailor resume feature</b> — job search is identical either way. <b>Local</b> gives keyword insertion + tips; <b>Free AI</b> / <b>OpenAI</b> / <b>Anthropic</b> produce precise before→after sentence rewrites of your resume. Local is the default; keys stay on your machine.</div>
+    <label>AI engine</label>
+    <select id="llmProvider" onchange="toggleModelRow()">
+      <option value="none">Local only (no key)</option>
+      <option value="free">Free AI (no key, no login)</option>
+      <option value="openai">OpenAI (your key)</option>
+      <option value="anthropic">Anthropic / Claude (your key)</option>
+    </select>
+    <div class="fmtnote warn" id="freeNote" style="display:none">⚡ Uses a free, keyless hosted AI (Pollinations) — no signup. It's a shared public service, so it can be slower/rate-limited and your prompt (incl. resume text) is sent to it. For anything sensitive, prefer Local or your own key.</div>
+    <div id="modelRow" style="display:none">
+      <label>API key</label>
+      <input type="password" id="apiKey" placeholder="paste key (sk-... or your Anthropic key)"/>
+      <label>Model</label>
+      <input type="text" id="modelName" placeholder="model name"/>
+    </div>
+    <div class="modal-acts">
+      <button class="btn ghost" onclick="closeModal('settingsModal')">Cancel</button>
+      <button class="btn" onclick="saveSettings()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let JOBS = [];
+let CUR = null;
+let CTX = {};
+
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3500);}
+function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+const DEFAULT_UPLOAD = '<div style="font-size:30px">📄</div>'+
+  '<div style="margin-top:6px;font-size:13.5px">Drop or click to upload</div>'+
+  '<div class="hint">.pdf · .docx · .txt</div>';
+
+function resetUploadBox(errMsg){
+  document.getElementById('uploadBox').classList.remove('has');
+  document.getElementById('uploadText').innerHTML = DEFAULT_UPLOAD +
+    (errMsg?`<div class="hint" style="color:var(--red);font-weight:600">⚠ ${esc(errMsg)}</div>`:'');
+  document.getElementById('fileInput').value='';
+  document.getElementById('skillNote').style.display='none';
+}
+
+async function loadCountries(){
+  try{
+    const r=await fetch('/api/countries');const d=await r.json();
+    const sel=document.getElementById('country');
+    d.countries.forEach(c=>{const o=document.createElement('option');o.value=c.toLowerCase();o.textContent=c;sel.appendChild(o);});
+  }catch(e){}
+}
+
+async function refreshStatus(){
+  const r=await fetch('/api/status');const s=await r.json();
+  document.getElementById('resumeDot').classList.toggle('on',s.resume_loaded);
+  document.getElementById('resumePill').textContent=s.resume_loaded?(s.resume_filename||'Resume loaded'):'No resume';
+  document.getElementById('aiDot').classList.toggle('on',s.llm_available);
+  document.getElementById('aiPill').textContent=s.llm_available?'AI engine':'Local engine';
+  if(s.resume_loaded&&s.resume_skills.length){
+    document.getElementById('skillChips').innerHTML=s.resume_skills.slice(0,18).map(k=>`<span class="chip-s g">${esc(k)}</span>`).join('');
+    document.getElementById('skillNote').style.display='block';
+    document.getElementById('uploadBox').classList.add('has');
+    document.getElementById('uploadText').innerHTML=`<div style="font-size:26px">✅</div><div style="margin-top:6px;font-size:13.5px">${esc(s.resume_filename)}</div><div class="hint">${s.resume_skills.length} skills from work experience · click to replace</div>`;
+  }
+}
+
+function gradeClass(n){if(n>=70)return '';if(n>=50)return 'b';if(n>=30)return 'c';return 'd';}
+function latamClass(n){if(n>=80)return '';if(n>=50)return 'mid';return 'low';}
+function money(j){
+  if(j.salary_max||j.salary_min){
+    const a=j.salary_min,b=j.salary_max;
+    if(a&&b&&a!==b)return '$'+(a/1000|0)+'k–$'+(b/1000|0)+'k';
+    const v=b||a;return '$'+(v/1000|0)+'k';
+  }return null;
+}
+
+async function runSearch(){
+  const btn=document.getElementById('searchBtn');
+  const sources=[...document.querySelectorAll('.src:checked')].map(c=>c.value);
+  if(!sources.length){toast('Pick at least one source');return;}
+  btn.disabled=true;btn.innerHTML='<span class="spin"></span> Searching…';
+  document.getElementById('results').innerHTML='<div class="empty"><span class="spin"></span><div style="margin-top:12px">Fetching live roles…</div></div>';
+  try{
+    const body={
+      keywords:document.getElementById('keywords').value,
+      sources, min_salary:document.getElementById('minSalary').value||null,
+      latam_only:document.getElementById('latamOnly').checked,
+      sort_by:document.getElementById('sortBy').value,
+      country:document.getElementById('country').value
+    };
+    const r=await fetch('/api/search',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const d=await r.json();
+    JOBS=d.jobs||[];
+    renderJobs(d);
+  }catch(e){document.getElementById('results').innerHTML='<div class="empty">Search failed: '+esc(e.message)+'</div>';}
+  btn.disabled=false;btn.innerHTML='🔍 Search jobs';
+}
+
+function renderJobs(d){
+  document.getElementById('reSortWrap').style.display=JOBS.length?'flex':'none';
+  document.getElementById('resultMeta').textContent=
+    `${d.count} roles`+(d.have_resume?' · ranked by match':' · upload a resume to rank by fit');
+  if(!JOBS.length){document.getElementById('results').innerHTML=
+    '<div class="empty"><div class="big">🤷</div>No eligible roles matched. Try broader keywords, more sources, pick "All LatAm", or untick "Eligible only".</div>';return;}
+  document.getElementById('results').innerHTML=JOBS.map(j=>{
+    const m=j.match_score;
+    const sal=money(j);
+    const lc=latamClass(j.latam_score);
+    const matched=(j.matched_skills||[]).slice(0,6).map(s=>`<span class="chip-s g">${esc(s)}</span>`).join('');
+    return `<div class="job" id="job-${j.id}">
+      <div class="jh">
+        <div style="flex:1">
+          <h4>${esc(j.title)}</h4>
+          <div class="co">${esc(j.company)||'—'} ${j.region?'· '+esc(j.region):''}</div>
+        </div>
+        ${m!==null?`<div class="score"><div class="num grade ${gradeClass(m)}">${m}</div><div class="lbl">match</div></div>`:''}
+      </div>
+      <div class="badges">
+        <span class="badge latam ${lc}" title="${esc(j.latam_reason||'')}">🌎 ${esc(j.latam_label)}</span>
+        ${sal?`<span class="badge sal">💰 ${sal}</span>`:''}
+        <span class="badge src">${esc(j.source)}</span>
+        ${j.category?`<span class="badge">${esc((j.category||'').slice(0,28))}</span>`:''}
+      </div>
+      ${matched?`<div class="chips">${matched}</div>`:''}
+      <div class="desc" id="desc-${j.id}">${esc((j.description||'').slice(0,700))}…</div>
+      <div class="acts">
+        <button class="btn ghost sm" onclick="toggleDesc(${j.id})">Details</button>
+        ${j.url?`<a class="btn ghost sm" href="${esc(j.url)}" target="_blank" rel="noopener">Apply ↗</a>`:''}
+        <button class="btn sm" onclick="getSuggestions(${j.id})">✨ Tailor resume</button>
+      </div>
+    </div>`;}).join('');
+}
+
+function toggleDesc(id){document.getElementById('job-'+id).classList.toggle('open');}
+
+async function uploadResume(file){
+  if(!file)return;
+  document.getElementById('uploadBox').classList.remove('has');
+  document.getElementById('uploadText').innerHTML='<span class="spin"></span><div style="margin-top:8px;font-size:13px">Reading…</div>';
+  const fd=new FormData();fd.append('file',file);
+  try{
+    const r=await fetch('/api/upload_resume',{method:'POST',body:fd});
+    let d={};
+    try{d=await r.json();}catch(e){d={error:'Server returned an unexpected response.'};}
+    if(!r.ok||d.error){resetUploadBox(d.error||'Upload failed');toast(d.error||'Upload failed');return;}
+    toast(`Resume loaded · ${d.skills.length} skills from work experience`);
+    await refreshStatus();
+    if(JOBS.length)runSearch();
+  }catch(e){resetUploadBox('Upload failed: '+e.message);toast('Upload failed: '+e.message);}
+}
+
+async function getSuggestions(id){
+  CUR=id;
+  document.getElementById('suggestBody').innerHTML='<div class="empty"><span class="spin"></span><div style="margin-top:12px">Analyzing fit & drafting changes…</div></div>';
+  document.getElementById('suggestModal').classList.add('show');
+  try{
+    const r=await fetch('/api/suggest',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({job_id:id})});
+    const d=await r.json();
+    if(d.error){document.getElementById('suggestBody').innerHTML='<button class="close" onclick="closeModal(\'suggestModal\')">×</button><div class="empty">'+esc(d.error)+'</div>';return;}
+    CTX=d;renderSuggest(d);
+  }catch(e){document.getElementById('suggestBody').innerHTML='<div class="empty">Failed: '+esc(e.message)+'</div>';}
+}
+
+function renderSuggest(d){
+  const aiTag=d.engine!=='local'?`<span class="enginetag ai">⚡ ${esc(d.engine)}</span>`:'<span class="enginetag">local engine</span>';
+  const head=`<button class="close" onclick="closeModal('suggestModal')">×</button>
+    <h2>${esc(d.title)}</h2>
+    <div class="co">${esc(d.company)} &nbsp;·&nbsp; Match score <b class="grade ${gradeClass(d.match_score)}">${d.match_score}</b> &nbsp; ${aiTag}</div>`;
+
+  // No changes needed -> celebrate and offer to close.
+  if(d.no_changes_needed){
+    document.getElementById('suggestBody').innerHTML = head + `
+      <div class="noChange">
+        <div class="big">✅</div>
+        <div style="font-weight:700;margin:6px 0 4px;color:var(--grn)">Your resume already fits this role</div>
+        <div style="font-size:13.5px;color:var(--txt)">${esc(d.assessment||'No changes recommended.')}</div>
+      </div>
+      <div class="modal-acts"><button class="btn" onclick="closeModal('suggestModal')">Great, close</button></div>`;
+    return;
+  }
+
+  const matched=(d.matched_skills||[]).map(s=>`<span class="chip-s g">${esc(s)}</span>`).join('')||'<span class="hint">none detected</span>';
+  const gaps=(d.keywords_to_add||[]).map(s=>`<span class="chip-s r">${esc(s)}</span>`).join('')||'<span class="hint">none</span>';
+
+  // Concrete before -> after edits (LLM). Each is toggleable and applied to the original file.
+  let editsHtml='';
+  if((d.edits||[]).length){
+    editsHtml = `<div class="sec"><h5>Proposed wording changes (applied to your original file)</h5>` +
+      d.edits.map((e,i)=>`<div class="edit"><label>
+          <input type="checkbox" class="editchk" data-i="${i}" checked>
+          <div><div class="bef">${esc(e.find||'')}</div>
+          <div class="aft">${esc(e.replace||'')}</div>
+          ${e.reason?`<div class="rsn">${esc(e.reason)}</div>`:''}</div>
+        </label></div>`).join('') + `</div>`;
+  }
+
+  // Manual tips (advisory, not auto-applied)
+  let tipsHtml='';
+  if((d.tips||[]).length){
+    tipsHtml = `<div class="sec"><h5>Manual tips (apply yourself)</h5>` +
+      d.tips.map(t=>`<div class="sg" style="cursor:default">💡 ${esc(t)}</div>`).join('') + `</div>`;
+  }
+
+  const fmtNote = d.can_edit_format
+    ? `<div class="fmtnote ok">✅ Your original <b>.docx</b> formatting is kept — only the selected sentences/words change.</div>`
+    : `<div class="fmtnote warn">⚠ This resume was uploaded as PDF/TXT, so a new .docx will be generated (exact original layout can't be preserved). Re-upload as <b>.docx</b> to keep your format.</div>`;
+
+  const summaryBlock = `<div class="sec"><h5>Optional tailored summary</h5>
+      <textarea id="summaryBox" placeholder="A tailored 2-3 sentence summary (optional)…">${esc(d.summary||'')}</textarea>
+      <label class="chk"><input type="checkbox" id="insertSummary"> Insert this summary at the top of my resume</label></div>`;
+
+  const kwBlock = (d.keywords_to_add||[]).length
+    ? `<div class="sec"><h5>Keywords to add</h5><div class="chips">${gaps}</div>
+        <label class="chk"><input type="checkbox" id="addKw" checked> Append these to my Skills line (if I have experience with them)</label></div>`
+    : '';
+
+  document.getElementById('suggestBody').innerHTML = head + `
+    <div class="sec"><h5>You already match (from work experience)</h5><div class="chips">${matched}</div></div>
+    ${editsHtml}
+    ${kwBlock}
+    ${summaryBlock}
+    ${tipsHtml}
+    ${fmtNote}
+    <div class="modal-acts">
+      <button class="btn ghost" onclick="closeModal('suggestModal')">Close</button>
+      <button class="btn" id="applyBtn" onclick="applyChanges()">⬇ Apply changes &amp; download .docx</button>
+    </div>`;
+}
+
+async function applyChanges(){
+  const btn=document.getElementById('applyBtn');
+  btn.disabled=true;btn.innerHTML='<span class="spin"></span> Building…';
+  const edits=[...document.querySelectorAll('.editchk:checked')].map(c=>CTX.edits[+c.dataset.i]);
+  const summaryEl=document.getElementById('summaryBox');
+  const insEl=document.getElementById('insertSummary');
+  const kwEl=document.getElementById('addKw');
+  const body={
+    job_id:CUR,
+    edits,
+    summary:summaryEl?summaryEl.value:'',
+    insert_summary:insEl?insEl.checked:false,
+    keywords_to_add:(kwEl&&kwEl.checked)?(CTX.keywords_to_add||[]):[],
+    suggestions:CTX.tips||[]
+  };
+  try{
+    const r=await fetch('/api/apply',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(!r.ok){const e=await r.json();toast(e.error||'Failed');btn.disabled=false;btn.innerHTML='⬇ Apply changes & download .docx';return;}
+    const blob=await r.blob();
+    const cd=r.headers.get('Content-Disposition')||'';
+    const m=cd.match(/filename="?([^"]+)"?/);
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+    a.download=m?m[1]:'Tailored_Resume.docx';a.click();
+    toast('Tailored resume downloaded ✅');
+  }catch(e){toast('Download failed');}
+  btn.disabled=false;btn.innerHTML='⬇ Apply changes & download .docx';
+}
+
+async function openSettings(){
+  const r=await fetch('/api/settings');const s=await r.json();
+  document.getElementById('llmProvider').value=s.llm_provider;
+  document.getElementById('modelName').value=s.llm_provider==='anthropic'?s.anthropic_model:s.openai_model;
+  toggleModelRow();
+  document.getElementById('settingsModal').classList.add('show');
+}
+function toggleModelRow(){
+  const p=document.getElementById('llmProvider').value;
+  const keyed=(p==='openai'||p==='anthropic');
+  document.getElementById('modelRow').style.display=keyed?'block':'none';
+  document.getElementById('freeNote').style.display=(p==='free')?'block':'none';
+  const mn=document.getElementById('modelName');
+  if(p==='openai'&&!mn.value)mn.value='gpt-4o-mini';
+  if(p==='anthropic'&&!mn.value)mn.value='claude-3-5-sonnet-latest';
+}
+async function saveSettings(){
+  const p=document.getElementById('llmProvider').value;
+  const body={llm_provider:p};
+  if(p==='openai'||p==='anthropic'){
+    body.api_key=document.getElementById('apiKey').value;
+    if(p==='openai')body.openai_model=document.getElementById('modelName').value;
+    else body.anthropic_model=document.getElementById('modelName').value;
+  }
+  await fetch('/api/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  closeModal('settingsModal');await refreshStatus();toast('Settings saved');
+}
+function closeModal(id){document.getElementById(id).classList.remove('show');}
+
+const ub=document.getElementById('uploadBox');
+['dragover','dragenter'].forEach(ev=>ub.addEventListener(ev,e=>{e.preventDefault();ub.style.borderColor='var(--acc)';}));
+['dragleave','drop'].forEach(ev=>ub.addEventListener(ev,e=>{e.preventDefault();ub.style.borderColor='';}));
+ub.addEventListener('drop',e=>{if(e.dataTransfer.files[0])uploadResume(e.dataTransfer.files[0]);});
+document.getElementById('keywords').addEventListener('keydown',e=>{if(e.key==='Enter')runSearch();});
+[...document.querySelectorAll('.modal')].forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show');}));
+
+
+const SRC={
+ remotive:{home:'https://remotive.com',search:q=>'https://remotive.com/remote-jobs?search='+encodeURIComponent(q)},
+ remoteok:{home:'https://remoteok.com',search:q=>'https://remoteok.com/remote-'+encodeURIComponent(q.trim().replace(/\s+/g,'-'))+'-jobs'},
+ arbeitnow:{home:'https://www.arbeitnow.com/remote-jobs'},
+ jobicy:{home:'https://jobicy.com',search:q=>'https://jobicy.com/?s='+encodeURIComponent(q)},
+ himalayas:{home:'https://himalayas.app',search:q=>'https://himalayas.app/jobs?search='+encodeURIComponent(q)},
+ workingnomads:{home:'https://www.workingnomads.com/jobs',search:q=>'https://www.workingnomads.com/jobs?search='+encodeURIComponent(q)},
+ getonbrd:{home:'https://www.getonbrd.com',search:q=>'https://www.getonbrd.com/jobs?keyword='+encodeURIComponent(q)},
+ themuse:{home:'https://www.themuse.com/jobs'},
+ weworkremotely:{home:'https://weworkremotely.com',search:q=>'https://weworkremotely.com/remote-jobs/search?term='+encodeURIComponent(q)},
+ jobspresso:{home:'https://jobspresso.co',search:q=>'https://jobspresso.co/?s='+encodeURIComponent(q)},
+ hiringcafe:{home:'https://hiring.cafe',search:q=>'https://hiring.cafe/?searchState='+encodeURIComponent(JSON.stringify({searchQuery:q}))},
+};
+function srcUrl(key){const s=SRC[key];if(!s)return '#';const q=(document.getElementById('keywords').value||'').trim();return (q&&s.search)?s.search(q):s.home;}
+document.querySelectorAll('.srclink[data-src]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    e.preventDefault();
+    window.open(srcUrl(a.dataset.src),'_blank','noopener');
+  });
+});
+
+loadCountries();
+refreshStatus();
+</script>
+</body>
+</html>
