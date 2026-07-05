@@ -1,13 +1,13 @@
-# jobhunt-latam
+# JobHunt LatAm
 Local Flask web app that finds remote jobs open to LatAm applicants across 10 free job boards, flags work-authorization eligibility by country, scores each role against your resume, and generates tailored .docx edits that keep your original formatting. Runs offline; optional keyless AI mode.
 
+<img width="964" height="987" alt="01-JobHunt" src="https://github.com/user-attachments/assets/e0b87654-9ce0-4271-9888-e7048a64f16a" />
 
 
+<img width="983" height="987" alt="02-JobHunt" src="https://github.com/user-attachments/assets/d6f343d3-7f10-4924-800e-7d4db20e15be" />
 
 
-
-
-
+<img width="694" height="594" alt="03-JobHunt" src="https://github.com/user-attachments/assets/da287981-abbd-45b5-8021-e867919f3fdd" />
 
 # JobHunt LatAm
 
