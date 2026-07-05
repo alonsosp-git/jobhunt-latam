@@ -8,7 +8,8 @@ Local Flask web app that finds remote jobs open to LatAm applicants across 10 fr
 Taylor your resume option:
 
 
-<img width="694" height="594" alt="03-JobHunt" src="https://github.com/user-attachments/assets/da287981-abbd-45b5-8021-e867919f3fdd" />
+
+<img width="694" height="594" alt="03-JobHunt-fixed" src="https://github.com/user-attachments/assets/e4604441-e6fb-4d04-8f3f-8adbd4886365" />
 
 # JobHunt LatAm
 
