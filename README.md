@@ -5,8 +5,6 @@ Local Flask web app that finds remote jobs open to LatAm applicants across 10 fr
 
 
 <img width="983" height="987" alt="02-JobHunt" src="https://github.com/user-attachments/assets/d6f343d3-7f10-4924-800e-7d4db20e15be" />
-
-
 <img width="694" height="594" alt="03-JobHunt" src="https://github.com/user-attachments/assets/da287981-abbd-45b5-8021-e867919f3fdd" />
 
 # JobHunt LatAm
